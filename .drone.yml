@@ -79,12 +79,86 @@ pipeline:
         TESTS: eslint
   vue-build:
     image: nextcloudci/jsunit:jsunit-5
+    group: build
     commands:
       - npm install
       - npm run build
     when:
       matrix:
         TESTS: vue-build
+
+  frontend-build-javascript:
+    image: nextcloudci/jsunit:jsunit-5
+    group: build
+    commands:
+    - npm install
+    - npm rebuild node-sass
+    - npm run build
+    when:
+      matrix:
+        TESTS: frontenda
+  frontend-build-php:
+    image: nextcloudci/acceptance-php7.1:acceptance-php7.1-2
+    group: build
+    commands:
+    - composer install
+    when:
+      matrix:
+        TESTS: frontend
+  frontend-server:
+    image: nextcloudci/acceptance-php7.1:acceptance-php7.1-2
+    group: test
+    detach: true
+    environment:
+    - APP_NAME=social
+    - CORE_BRANCH=master
+    - DB=sqlite
+    commands:
+    # Checkout the latest server
+    - git clone --depth 1 -b master https://github.com/nextcloud/server /drone/server
+    - cd /drone/server
+    - ln --symbolic $(pwd) /var/www/html
+    - git submodule update --init
+
+    # Add app sources to the app director
+    - cp -R /drone/src /drone/server/apps/social
+
+    # Install server
+    - wget https://raw.githubusercontent.com/nextcloud/travis_ci/master/core_install.sh && bash core_install.sh sqlite
+    - php occ app:enable social
+    - php occ config:system:set trusted_domains 2 --value=frontend-server
+    - export OC_PASS=p4ssw0rd
+    - php occ user:add --password-from-env --display-name="Jane Doe" janedoe
+    - php occ user:add --password-from-env --display-name="John Doe" johndoe
+    - touch /drone/server/data/nextcloud.log
+    - chown -R www-data:www-data /drone/server
+
+    # Watch logs and run apache
+    - tail -f /drone/server/data/nextcloud.log &
+    - . /etc/apache2/envvars
+    - apache2 -DFOREGROUND
+    when:
+      matrix:
+        TESTS: frontend
+  frontend-test:
+    image: cypress/browsers:chrome69
+    group: test
+    environment:
+    - APP_NAME=social
+    - CORE_BRANCH=master
+    - DB=sqlite
+    commands:
+    - npm install
+    - npm rebuild node-sass
+    - npm run build
+    - bash -c "until curl -s http://frontend-server > /dev/null; do sleep 2; done"
+    - curl -v http://frontend-server/index.php/
+    - $(npm bin)/cypress install
+    - CYPRESS_baseUrl=http://frontend-server/index.php/ $(npm bin)/cypress run # --record --key $CYPRESS_RECORD_TOKEN
+    secrets: [ cypress_record_token ]
+    when:
+      matrix:
+        TESTS: frontend
 
 matrix:
   include:
@@ -94,6 +168,7 @@ matrix:
     - TESTS: syntax-php7.2
     - TESTS: syntax-php7.3
     - TESTS: eslint
+    - TESTS: frontend
     - TESTS: vue-build
 
 
