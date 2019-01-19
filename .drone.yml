@@ -120,8 +120,8 @@ pipeline:
     - ln --symbolic $(pwd) /var/www/html
     - git submodule update --init
 
-    # Add app sources to the app director
-    - cp -R /drone/src /drone/server/apps/social
+    # Add app sources to the app directory
+    - cp -R /drone/src/github.com/nextcloud/social /drone/server/apps/social
     - ls -la /drone/server/apps/social
 
     # Install server
@@ -150,10 +150,7 @@ pipeline:
     - DB=sqlite
     commands:
     - npm install
-    - npm rebuild node-sass
-    - npm run build
-    - bash -c "until curl -s http://frontend-server > /dev/null; do sleep 2; done"
-    - curl -v http://frontend-server/index.php/
+    - $(npm bin)/wait-on -i 500 -t 300000 http://frontend-server/index.php/login
     - $(npm bin)/cypress install
     - CYPRESS_baseUrl=http://frontend-server/index.php/ $(npm bin)/cypress run --record --key $CYPRESS_RECORD_TOKEN
     secrets: [ cypress_record_token ]
