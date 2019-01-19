@@ -96,7 +96,7 @@ pipeline:
     - npm run build
     when:
       matrix:
-        TESTS: frontenda
+        TESTS: frontend
   frontend-build-php:
     image: nextcloudci/acceptance-php7.1:acceptance-php7.1-2
     group: build
@@ -122,6 +122,7 @@ pipeline:
 
     # Add app sources to the app director
     - cp -R /drone/src /drone/server/apps/social
+    - ls -la /drone/server/apps/social
 
     # Install server
     - wget https://raw.githubusercontent.com/nextcloud/travis_ci/master/core_install.sh && bash core_install.sh sqlite
