@@ -41,12 +41,12 @@ describe('Create posts', function() {
 		cy.get('.new-post input[type=submit]')
 			.click()
 		cy.wait(250)
-		cy.get('.social__timeline > div.timeline-entry:first-child').contains('Hello world')
+		cy.get('.social__timeline > div.timeline-entry:first-child').should('contain', 'Hello world')
 	})
 
 	it('Write a post to followers with shift enter', function() {
 		cy.get('.new-post').find('[contenteditable]').type('Hello world 2{shift}{enter}')
-		cy.get('.social__timeline > div.timeline-entry:first-child').contains('Hello world')
+		cy.get('.social__timeline > div.timeline-entry:first-child').should('contain', 'Hello world 2')
 	})
 
 	it('Write a post to @admin', function() {
@@ -56,7 +56,7 @@ describe('Create posts', function() {
 		cy.get('.new-post').find('[contenteditable]').type('{enter} Hello there', {delay: 100, force: true})
 		cy.get('.new-post input[type=submit]')
 			.click()
-		cy.get('.social__timeline > div.timeline-entry:first-child').contains('Hello there').contains('admin@localhost')
+		cy.get('.social__timeline > div.timeline-entry:first-child').should('contain', 'admin@localhost')
 	})
 
 	it('Opens the menu and shows that followers is selected by default', function() {
@@ -74,7 +74,7 @@ describe('Create posts', function() {
 
 		cy.get('.new-post input[type=submit]')
 			.click()
-		cy.get('.social__timeline > div.timeline-entry:first-child').contains('Hello there').contains('admin@localhost')
+		cy.get('.social__timeline > div.timeline-entry:first-child').should('contain', 'Hello there').should('contain', 'admin@localhost')
 
 	})
 
