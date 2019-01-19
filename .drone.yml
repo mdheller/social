@@ -152,7 +152,7 @@ pipeline:
     - npm install
     - $(npm bin)/wait-on -i 500 -t 300000 http://frontend-server/index.php/login
     - $(npm bin)/cypress install
-    - CYPRESS_baseUrl=http://frontend-server/index.php/ $(npm bin)/cypress run --record --key $CYPRESS_RECORD_TOKEN
+    - CYPRESS_baseUrl=http://frontend-server/index.php/ $(npm bin)/cypress run --record --key 0eb3ab11-0611-4baa-9b9e-d6f0320478d5 #$CYPRESS_RECORD_TOKEN
     secrets: [ cypress_record_token ]
     when:
       matrix:
