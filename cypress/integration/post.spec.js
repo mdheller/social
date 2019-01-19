@@ -50,8 +50,8 @@ describe('Create posts', function() {
 	})
 
 	it('Write a post to @admin', function() {
-		cy.get('.new-post').find('[contenteditable]').click({force: true}).type('@adm', {delay: 500, force: true}).wait(500)
-		cy.get('.tribute-container')
+		cy.get('.new-post').find('[contenteditable]').type('@adm', {delay: 500})
+		cy.get('.tribute-container').should('be.visible')
 		cy.get('.tribute-container ul li:first').contains('admin')
 		cy.get('.new-post').find('[contenteditable]').type('{enter} Hello there', {delay: 100, force: true})
 		cy.get('.new-post input[type=submit]')
@@ -60,7 +60,8 @@ describe('Create posts', function() {
 	})
 
 	it('Opens the menu and shows that followers is selected by default', function() {
-		cy.get('.new-post').find('[contenteditable]').click({force: true}).type('@adm{enter} Hello world', {delay: 500, force: true}).wait(500)
+		cy.get('.new-post').find('[contenteditable]').click({force: true}).type('@adm{enter} Hello world', {delay: 500, force: true})
+		cy.wait(500)
 		cy.get('.new-post input[type=submit]').should('not.be.disabled')
 		const visibilityButton = cy.get('.new-post .options > div > button')
 		visibilityButton.should('have.class', 'icon-contacts-dark')

@@ -1,10 +1,9 @@
 import 'cypress-testing-library/add-commands'
 
 Cypress.Commands.add('login', (user, password, route = '/apps/files') => {
-	cy.clearCookie('nc_session_id')
-	cy.clearCookie('oc_sessionPassphrase')
+	cy.clearCookies()
 	Cypress.Cookies.defaults({
-		whitelist: [ 'nc_session_id', 'nc_username', 'nc_token', 'oc_sessionPassphrase' ]
+		whitelist: /^(oc|nc)/
 	})
 	cy.visit(route)
 	cy.get('input[name=user]').type(user)
@@ -17,8 +16,7 @@ Cypress.Commands.add('login', (user, password, route = '/apps/files') => {
  * Create a user using the provision API
  */
 Cypress.Commands.add('nextcloudCreateUser', (user, password) => {
-	cy.clearCookie('nc_session_id')
-	cy.clearCookie('oc_sessionPassphrase')
+	cy.clearCookies()
 	var url = Cypress.config('baseUrl').replace(/\/index.php\/?$/g, '')
 	cy.request({
 		method: 'POST',
