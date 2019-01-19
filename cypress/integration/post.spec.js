@@ -25,9 +25,13 @@ describe('Create posts', function() {
 	before(function() {
 		cy.nextcloudCreateUser('janedoe', 'p4ssw0rd')
 		cy.login('janedoe', 'p4ssw0rd', '/apps/social/')
+		cy.get('#app-content').should('be.visible')
 	})
 
-	/*
+	afterEach(function() {
+		cy.screenshot()
+	})
+
 	it('Write a post to followers', function() {
 		cy.get('.new-post input[type=submit]')
 			.should('be.disabled')
@@ -52,19 +56,6 @@ describe('Create posts', function() {
 		cy.get('.new-post input[type=submit]')
 			.click()
 		cy.get('.social__timeline > div:first-child').contains('Hello there').contains('admin@localhost')
-	})*/
-
-	it('Opens the menu and shows that followers is selected by default', function() {
-		cy.get('.new-post').find('[contenteditable]').click({force: true}).type('@adm{enter} Hello world', {delay: 500, force: true}).wait(500)
-		cy.get('.new-post input[type=submit]').should('not.be.disabled')
-		const visibilityButton = cy.get('.new-post .options > div > button')
-		visibilityButton.should('have.class', 'icon-contacts-dark')
-
-		visibilityButton.click()
-		cy.get('.new-post .popovermenu').should('be.visible')
-		cy.get('.new-post .popovermenu .active').contains('Followers')
-		visibilityButton.click()
-		cy.get('.new-post .popovermenu').should('not.be.visible')
 	})
 
 	it('Opens the menu and shows that followers is selected by default', function() {
@@ -74,10 +65,15 @@ describe('Create posts', function() {
 		visibilityButton.should('have.class', 'icon-contacts-dark')
 
 		visibilityButton.click()
-		cy.get('.new-post .popovermenu').should('be.visible')
-		cy.get('.new-post .popovermenu .active').contains('Followers')
+		cy.get('.new-post-form .popovermenu').should('be.visible')
+		cy.get('.new-post-form .popovermenu .active').contains('Followers')
 		visibilityButton.click()
-		cy.get('.new-post .popovermenu').should('not.be.visible')
+		cy.get('.new-post-form .popovermenu').should('not.be.visible')
+
+		cy.get('.new-post input[type=submit]')
+			.click()
+		cy.get('.social__timeline > div:first-child').contains('Hello there').contains('admin@localhost')
+
 	})
 
 })
