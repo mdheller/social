@@ -154,7 +154,7 @@ pipeline:
     - bash -c "until curl -s http://frontend-server > /dev/null; do sleep 2; done"
     - curl -v http://frontend-server/index.php/
     - $(npm bin)/cypress install
-    - CYPRESS_baseUrl=http://frontend-server/index.php/ $(npm bin)/cypress run # --record --key $CYPRESS_RECORD_TOKEN
+    - CYPRESS_baseUrl=http://frontend-server/index.php/ $(npm bin)/cypress run --record --key $CYPRESS_RECORD_TOKEN
     secrets: [ cypress_record_token ]
     when:
       matrix:
